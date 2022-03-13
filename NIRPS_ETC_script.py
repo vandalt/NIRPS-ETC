@@ -18,6 +18,7 @@
 
 # Imports
 
+# %%
 import numpy
 from os import system, chdir
 import matplotlib.pyplot as plt
@@ -60,30 +61,41 @@ start_time = time.time()
 #
 ################################################################
 
+# %%
 input_targets_file = 'etc_targets_input.txt'
 output_targets_file = 'etc_targets_output.txt'
+input_targets_file = "/home/vandal/Documents/hdccs/nirps-white-gto-proposal/pisco_info_planets.csv"
+output_csv = "/home/vandal/Documents/hdccs/nirps-white-gto-proposal/pisco_info_planets_etc.csv"
 
-input_targets = pd.read_csv(input_targets_file,sep=r"\s+",header=0)
-targets = input_targets['target']
-sts = input_targets['st']
+input_targets = pd.read_csv(input_targets_file, header=0)
+output_df = input_targets.copy()
+input_targets["obs_mode"] = "HA"
+input_targets["seeing"] = 1.0
+input_targets["airmass"] = 1.0
+input_targets["bandpass"] = "CFHT"
+input_targets["sts"] = "F0V"
+targets = input_targets['Target name']
+# sts = input_targets['Spectral type']
+sts = input_targets['sts']
 obs_modes = input_targets['obs_mode']
 seeings = input_targets['seeing']
 airmasses = input_targets['airmass'] 
-Hmags = input_targets['H']
-t_exps = input_targets['t_exp']
+Hmags = input_targets['Hmag']
+# t_exps = input_targets['t_exp']
 bandpasses = input_targets['bandpass']
+t_exps = 3600 * 5.0 * 100**((Hmags - Hmags[4]) / 5)
+output_df["Exposure time [h]"] = t_exps / 3600
 
-
-
+# %%
 output_targets = open(output_targets_file, "w")
-output_targets.write('target Mean_S/N_(ph/pxl) Mean_S/N_(ph/pxl)_Y Mean_S/N_(ph/pxl)_J Mean_S/N_(ph/pxl)_H spRV enRV_vsini01 enRV_vsini1 enRV_vsini5 enRV_vsini10 \n')
+output_targets.write('target texp Mean_S/N_(ph/pxl) Mean_S/N_(ph/pxl)_Y Mean_S/N_(ph/pxl)_J Mean_S/N_(ph/pxl)_H spRV enRV_vsini01 enRV_vsini1 enRV_vsini5 enRV_vsini10 \n')
 
 
 effs_file = 'NIRPS_effs.txt'
 wave_range_file = 'NIRPS_wave_range.txt'
 tapas_file = 'NIRPS_tapas.txt'
 st_templates_file = 'NIRPS_STAR_templates.txt'
-
+sn_pxl_list = []
 
 for itarget in range(len(targets)):
     target = targets[itarget]
@@ -1112,6 +1124,7 @@ for itarget in range(len(targets)):
     	i=i+1
     
     #text_file.close()
+    sn_pxl_list.append(SN_pxl/len(order_wave))
     print ("-----------------------------------------------------------------")
     print("\n SIGNAL TO NOISE RATIO:\n")
     print ("Mean S/N: %5.1f (ph/pxl) | %5.1f (ph/res elem)"%(SN_pxl/len(order_wave),SN_bin/len(order_wave)))
@@ -1226,6 +1239,9 @@ for itarget in range(len(targets)):
         
     
     print ("=================================================================\n\n")
-    output_targets.write(target+' %.2f %.2f %.2f %.2f '%(SN_pxl/len(order_wave),SN_pxl_Y/mean_pxl_Y,SN_pxl_J/mean_pxl_J,SN_pxl_H/mean_pxl_H)+spRV+' '+enRV_vsini01+' '+enRV_vsini1+' '+enRV_vsini5+' '+enRV_vsini10+' \n')
+    output_targets.write(target+' %.2f %.2f %.2f %.2f %.2f '%(t_exp, SN_pxl/len(order_wave),SN_pxl_Y/mean_pxl_Y,SN_pxl_J/mean_pxl_J,SN_pxl_H/mean_pxl_H)+spRV+' '+enRV_vsini01+' '+enRV_vsini1+' '+enRV_vsini5+' '+enRV_vsini10+' \n')
 
 output_targets.close()
+
+output_df["SNR/Pixel"] = sn_pxl_list
+output_df.to_csv(output_csv)

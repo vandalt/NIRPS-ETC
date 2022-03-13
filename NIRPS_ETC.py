@@ -42,16 +42,16 @@ seeing= 1.0
 #Airmass (range 1.0-2.0):
 airmass= 1.0
 #Object magnitude (H band):
-H = 9
+H = 6.710
 #Exposure time (in sec):
-t_exp = 900
+t_exp = 3600 * 5.0
 
 #ST Models for IRFT
 #Spectral type that only have SNR estimate:
 #F0V/F5V/G0V/G5V/G8V/K0V/L1V/L2V/L3V/L5V/L6V/L8V/T2V
 #Spectral type that have SNR and RV precision estimate: 
 #K3V/K7V/M0V/M1V/M2V/M3V/M4V/M5V/M6V/M7V/M8V/M9V
-st = 'M4V'
+st = 'F5V'
 
 #wavelength bandpasses for YJH ('CFHT' or 'Eniric')
 bandpass = 'CFHT'
