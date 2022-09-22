@@ -3,10 +3,10 @@ import numpy as np
 
 from nirps_etc_driver import run_nirps_etc
 
-input_targets_file = 'etc_targets_input.txt'
-output_targets_file = 'etc_targets_output.txt'
+input_targets_file = 'etc_targets_input_pisco.txt'
+output_targets_file = 'etc_targets_output_pisco.txt'
 
-input_targets = pd.read_csv(input_targets_file, sep=r"\s+", header=0)
+input_targets = pd.read_csv(input_targets_file, sep=r"\s+", header=0, comment="#")
 targets = input_targets['target']
 sts = input_targets['st']
 obs_modes = input_targets['obs_mode']
